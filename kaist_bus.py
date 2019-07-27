@@ -4,7 +4,6 @@ from collections import OrderedDict
 from datetime import timedelta
 
 from aiohttp import ClientSession
-
 from bs4 import BeautifulSoup
 
 
