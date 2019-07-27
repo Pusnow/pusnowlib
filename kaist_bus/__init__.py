@@ -9,8 +9,11 @@ from bs4 import BeautifulSoup
 
 class TimeTableBase:
     name = None
-    time_table = OrderedDict()
+    time_table = None
     fetch_done = False
+
+    def __init__(self):
+        self.time_table = OrderedDict()
 
     def add_bus_stop(self, bus_stop):
         if bus_stop not in self.time_table:
@@ -118,6 +121,11 @@ class MunJiTimeTable(TimeTableBase):
         self.fetch_done = True
 
 
+class MunJiWeekendTimeTable(MunJiTimeTable):
+    name = "캠퍼스간 주말"
+    table_num = 1
+
+
 class WolPyeongTimeTable(TimeTableBase):
     name = "월평/본교"
 
@@ -130,6 +138,7 @@ async def future_get_time_tables():
     tasks = []
     for time_table_t in [
             MunJiTimeTable,
+            MunJiWeekendTimeTable,
     ]:
         time_table = time_table_t()
         task = asyncio.ensure_future(time_table.get_result())
@@ -143,3 +152,8 @@ def get_time_tables():
     future = asyncio.ensure_future(future_get_time_tables())
     time_tables = loop.run_until_complete(future)
     return time_tables
+
+
+if __name__ == "__main__":
+    import pprint
+    pprint.pprint(get_time_tables())
