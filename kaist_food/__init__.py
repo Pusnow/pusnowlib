@@ -29,7 +29,9 @@ async def fetch_ds(entry):
             body = await response.text()
             menus = [
                 re.sub(r"<.*?>", "", menu).replace("&lt;", "<").replace(
-                    "&gt;", ">").replace("&amp;", "&").replace("&quot;", "\"")
+                    "&gt;", ">").replace("&amp;",
+                                         "&").replace("&quot;",
+                                                      "\"").replace("\\", "₩")
                 for menu in MENU.findall(body)
             ]
             if len(menus) != 3:
