@@ -30,8 +30,8 @@ async def fetch_ds(entry):
             menus = [
                 re.sub(r"<.*?>", "", menu).replace("&lt;", "<").replace(
                     "&gt;", ">").replace("&amp;",
-                                         "&").replace("&quot;",
-                                                      "\"").replace("\\", "₩")
+                                         "&").replace("&quot;", "\"").replace(
+                                             "\\", "₩").replace("-운영없음-", "")
                 for menu in MENU.findall(body)
             ]
             if len(menus) != 3:
