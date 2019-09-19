@@ -21,19 +21,23 @@ TABLE = re.compile(
 MENU = re.compile(r"<td.*?>(.*?)</td>", re.DOTALL)
 
 
+def format_menu(menu):
+    menu = re.sub(r"<.*?>", "", menu)
+    menu = menu.replace("&lt;", "<").replace("&gt;", ">")
+    menu = menu.replace("&amp;", "&").replace("&quot;", "\"")
+    menu = menu.replace("\\", "₩").replace("-운영없음-", "")
+    menu = "\n".join((line.strip() for line in menu.splitlines()))
+    menu = re.sub(r"\n\n\n*", "\n\n", menu)
+    return menu
+
+
 async def fetch_ds(entry):
     async with ClientSession() as session:
         url = BASE_URL % entry[0]
         async with session.get(url) as response:
             assert response.status == 200
             body = await response.text()
-            menus = [
-                re.sub(r"<.*?>", "", menu).replace("&lt;", "<").replace(
-                    "&gt;", ">").replace("&amp;",
-                                         "&").replace("&quot;", "\"").replace(
-                                             "\\", "₩").replace("-운영없음-", "")
-                for menu in MENU.findall(body)
-            ]
+            menus = [format_menu(menu) for menu in MENU.findall(body)]
             if len(menus) != 3:
                 return {
                     "ds": entry[1],
@@ -63,3 +67,13 @@ def get_foods():
     future = asyncio.ensure_future(future_get_foods())
     foods = loop.run_until_complete(future)
     return foods
+
+
+if __name__ == "__main__":
+    for food in get_foods():
+        print(food["ds"])
+        print(food["url"])
+        print(food["breakfast"])
+        print(food["lunch"])
+        print(food["dinner"])
+        print("\n\n\n")
