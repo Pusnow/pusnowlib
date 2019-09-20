@@ -31,35 +31,36 @@ def format_menu(menu):
     return menu
 
 
-async def fetch_ds(entry):
-    async with ClientSession() as session:
-        url = BASE_URL % entry[0]
-        async with session.get(url) as response:
-            assert response.status == 200
-            body = await response.text()
-            menus = [format_menu(menu) for menu in MENU.findall(body)]
-            if len(menus) != 3:
-                return {
-                    "ds": entry[1],
-                    "url": url,
-                }
-
+async def fetch_ds(session, entry):
+    url = BASE_URL % entry[0]
+    async with session.get(url) as response:
+        assert response.status == 200
+        body = await response.text()
+        menus = [format_menu(menu) for menu in MENU.findall(body)]
+        if len(menus) != 3:
             return {
                 "ds": entry[1],
                 "url": url,
-                "breakfast": menus[0],
-                "lunch": menus[1],
-                "dinner": menus[2],
             }
+
+        return {
+            "ds": entry[1],
+            "url": url,
+            "breakfast": menus[0],
+            "lunch": menus[1],
+            "dinner": menus[2],
+        }
 
 
 async def future_get_foods():
     tasks = []
-    for entry in DVS_DS:
-        task = asyncio.ensure_future(fetch_ds(entry))
-        tasks.append(task)
-    responses = await asyncio.gather(*tasks)
-    return responses
+    async with ClientSession() as session:
+        for entry in DVS_DS:
+            task = asyncio.ensure_future(fetch_ds(session, entry))
+            tasks.append(task)
+        responses = await asyncio.gather(*tasks)
+        return responses
+    return []
 
 
 def get_foods():
