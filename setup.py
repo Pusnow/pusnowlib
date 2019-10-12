@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pusnowlib",
-    version="0.0.7",
+    version="0.0.8",
     author="Wonsup Yoon",
     author_email="pusnow@me.com",
     license="MIT License",

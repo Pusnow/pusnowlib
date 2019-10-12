@@ -26,6 +26,7 @@ def format_menu(menu):
     menu = menu.replace("&lt;", "<").replace("&gt;", ">")
     menu = menu.replace("&amp;", "&").replace("&quot;", "\"")
     menu = menu.replace("\\", "₩").replace("-운영없음-", "")
+    menu = menu.replace("미운영", "")
     menu = "\n".join((line.strip() for line in menu.splitlines()))
     menu = re.sub(r"\n\n\n*", "\n\n", menu)
     return menu
