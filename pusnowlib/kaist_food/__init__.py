@@ -1,7 +1,8 @@
 import asyncio
 import re
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, TCPConnector
+from pusnowlib.unsafe_ssl import unsafe_ok
 
 BASE_URL = "https://www.kaist.ac.kr/kr/html/campus/053001.html?"
 DVS_DS = [
@@ -51,8 +52,9 @@ async def fetch_ds(session, entry):
 
 
 async def future_get_foods():
+    connector = TCPConnector(ssl=not unsafe_ok(BASE_URL))
     tasks = []
-    async with ClientSession() as session:
+    async with ClientSession(connector=connector) as session:
         for entry in DVS_DS:
             task = asyncio.ensure_future(fetch_ds(session, entry))
             tasks.append(task)
@@ -66,16 +68,3 @@ def get_foods():
     future = asyncio.ensure_future(future_get_foods())
     foods = loop.run_until_complete(future)
     return foods
-
-
-if __name__ == "__main__":
-    for food in get_foods():
-        print(food["ds"])
-        print(food["url"])
-        print("==== 아침 =====")
-        print(food["breakfast"])
-        print("==== 점심 =====")
-        print(food["lunch"])
-        print("==== 저녁 =====")
-        print(food["dinner"])
-        print("\n\n\n")
